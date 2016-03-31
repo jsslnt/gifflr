@@ -34,7 +34,7 @@ type alias Model =
 initialModel : Model
 initialModel =
     {
-        inputText = "hello.world.this is very cool.yes.yes it is.",
+        inputText = "Boots and. Cats. Boots and. Cats. Boots and. Cats. Boots and. Cats.  Boots and. Cats. Boots and. Cats.  Boots and. Cats. Boots and. Cats. ",
         sentences = [],
         nextIndex = 0,
         currentGif = ""
@@ -54,7 +54,7 @@ update action model =
         ReceiveGif url ->
             ({ model | currentGif = (Maybe.withDefault "" url),
                        nextIndex = model.nextIndex + 1
-             }, speak "FOOBAR IS A NICE PLACEHOLDER")
+             }, speak (Maybe.withDefault "SILENCE" (Array.get model.nextIndex (Array.fromList model.sentences))))
         NoOp ->
             (model, Effects.none)
 
