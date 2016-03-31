@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>GIFFLR PLS</title>
+        <script src="elm.js"></script>
+    </head>
+    <body>
+
+        <div id="main"></div>
+
+        <script>
+            'use strict'
+            const main = window.Elm.embed(Elm.Main, document.querySelector('#main'), {speakEnd: 0})
+
+            const voice = window.speechSynthesis.getVoices().filter((voices) => voice.name === "Fred")
+
+            main.ports.second.subscribe(function(textToBeSoken) {
+                const message = new SpeechSynthesisUtterance("BOOTS AND CATS")
+                message.voice = voice
+                window.speechSynthesis.speak(message)
+                message.onend = () =>  main.ports.speakEnd.send(textToBeSoken)
+            });
+        </script>
+    </body>
+</html>
