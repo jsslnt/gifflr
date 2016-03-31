@@ -1,6 +1,9 @@
 
 import Effects exposing (Never)
-import RandomGif exposing (..)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing ( on, targetValue, onClick)
+import TextParser exposing (..)
 import StartApp
 import Task
 import Time
@@ -9,15 +12,16 @@ import Time
 --Inbound
 port speakEnd : Signal (Int)
 
+app : StartApp.App Model
 app =
   StartApp.start
-    { init = init "CATS"
-    , update = update
-    , view = view
-    , inputs = [Signal.map (always RandomGif.RequestMore) speakEnd]
+    { init = TextParser.init
+    , update = TextParser.update
+    , view = TextParser.view
+    , inputs = [Signal.map TextParser.PlaySentence speakEnd]
     }
 
-
+main : Signal.Signal Html.Html
 main =
   app.html
 
@@ -27,9 +31,9 @@ port tasks : Signal (Task.Task Never ())
 port tasks =
   app.tasks
 
-port second : Signal Time.Time
-port second =
-    Time.every Time.second
+port speakSentence : Signal String
+port speakSentence =
+    spokenMailbox.signal
 
 
 

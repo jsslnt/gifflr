@@ -19,6 +19,7 @@ type Action = UpdateText String
   | PlaySentence Int
   | RequestGif
   | ReceiveGif (Maybe String)
+  | NoOp
   --| StartSpeakSentence
   --| EndSpeakSentence
 
@@ -53,7 +54,9 @@ update action model =
         ReceiveGif url ->
             ({ model | currentGif = (Maybe.withDefault "" url),
                        nextIndex = model.nextIndex + 1
-             }, Effects.none)
+             }, speak "FOOBAR IS A NICE PLACEHOLDER")
+        NoOp ->
+            (model, Effects.none)
 
 splitSentences : String -> List String
 splitSentences inputText =
@@ -113,27 +116,22 @@ imgStyle url =
 init : (Model, Effects.Effects Action)
 init = (initialModel, Effects.none)
 
-app : StartApp.App Model
-app =
-    StartApp.start
-    { init = init,
-      inputs = [],
-      view = view,
-      update = update
-    }
-
-main : Signal.Signal Html.Html
-main =
-  app.html
-
-port runner : Signal (Task.Task Never ())
-port runner =
-  app.tasks
-
 
 -- EFFECTS
 
 (=>) = (,)
+
+
+speak : String -> Effects Action
+speak sentence =
+  Signal.send spokenMailbox.address sentence
+    |> Effects.task
+    |> Effects.map (\_ -> NoOp)
+
+
+spokenMailbox: Signal.Mailbox String
+spokenMailbox =
+    Signal.mailbox ""
 
 getRandomGif : String -> Effects Action
 getRandomGif topic =

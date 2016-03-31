@@ -13,11 +13,11 @@
 
             const voice = window.speechSynthesis.getVoices().filter((voices) => voice.name === "Fred")
 
-            main.ports.second.subscribe(function(textToBeSoken) {
-                const message = new SpeechSynthesisUtterance("BOOTS AND CATS")
+            main.ports.speakSentence.subscribe(function(textToBeSpoken) {
+                const message = new SpeechSynthesisUtterance(textToBeSpoken)
                 message.voice = voice
                 window.speechSynthesis.speak(message)
-                message.onend = () =>  main.ports.speakEnd.send(textToBeSoken)
+                message.onend = () =>  main.ports.speakEnd.send(2)
             });
         </script>
     </body>
