@@ -26,7 +26,7 @@ type alias Model =
     {
         inputText : String,
         sentences : List String,
-        currentIndex: Int,
+        nextIndex: Int,
         currentGif : String
     }
 
@@ -35,7 +35,7 @@ initialModel =
     {
         inputText = "hello.world.this is very cool.yes.yes it is.",
         sentences = [],
-        currentIndex = 0,
+        nextIndex = 0,
         currentGif = ""
     }
 
@@ -45,13 +45,15 @@ update action model =
         UpdateText newText ->
             ({ model | inputText = newText }, Effects.none)
         GenerateSentences ->
-            ({ model | sentences = splitSentences model.inputText, currentIndex = 0 }, Effects.none)
+            ({ model | sentences = splitSentences model.inputText, nextIndex = 0 }, Effects.none)
         PlaySentence index ->
             (model, getRandomGif (Maybe.withDefault "SILENCE" (Array.get index (Array.fromList model.sentences))))
         RequestGif ->
             (model, Effects.none)
         ReceiveGif url ->
-            ({ model | currentGif = (Maybe.withDefault "" url) }, Effects.none)
+            ({ model | currentGif = (Maybe.withDefault "" url),
+                       nextIndex = model.nextIndex + 1
+             }, Effects.none)
 
 splitSentences : String -> List String
 splitSentences inputText =
@@ -75,12 +77,12 @@ submitButton address =
         , value "Submit Story"
         , onClick address GenerateSentences ] []
 
-playButton : Signal.Address Action -> Html
-playButton address =
+playButton : Signal.Address Action -> Int -> Html
+playButton address index =
     input [ class "play"
         , type' "button"
-        , value "Play movie"
-        , onClick address (PlaySentence 0) ] []
+        , value "Play next"
+        , onClick address (PlaySentence index) ] []
 
 view address model =
     body []
@@ -92,7 +94,7 @@ view address model =
           , value model.inputText
           , on "input" targetValue (\val -> (Signal.message address (UpdateText val))) ] []
       , submitButton address
-      , playButton address
+      , playButton address model.nextIndex
     ]
 
 imgStyle : String -> Attribute
@@ -110,14 +112,7 @@ imgStyle url =
 
 init : (Model, Effects.Effects Action)
 init = (initialModel, Effects.none)
--- app : StartApp.App Model
--- app =
---   StartApp.start
---     { init = init
---     , inputs = []
---     , update = update
---     , view = view
---     }
+
 app : StartApp.App Model
 app =
     StartApp.start
