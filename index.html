@@ -9,15 +9,15 @@
 
         <script>
             'use strict'
-            const main = window.Elm.embed(Elm.Main, document.querySelector('#main'))
+            const main = window.Elm.embed(Elm.Main, document.querySelector('#main'), {speakEnd: 0})
 
             const voice = window.speechSynthesis.getVoices().filter((voices) => voice.name === "Fred")
 
             main.ports.second.subscribe(function(textToBeSoken) {
-                const message = new SpeechSynthesisUtterance(textToBeSoken)
+                const message = new SpeechSynthesisUtterance("BOOTS AND CATS")
                 message.voice = voice
                 window.speechSynthesis.speak(message)
-                message.onend = () =>  main.ports.speakEnd.send()
+                message.onend = () =>  main.ports.speakEnd.send(textToBeSoken)
             });
         </script>
     </body>
