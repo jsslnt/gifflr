@@ -80,7 +80,6 @@ imgStyle url =
     , "background-image" => ("url('" ++ url ++ "')")
     ]
 
-
 -- EFFECTS
 
 getRandomGif : String -> Effects Action

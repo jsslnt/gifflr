@@ -1,70 +1,161 @@
-module TextParsing where
+module TextParser where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing ( on, targetValue, onClick)
-import StartApp.Simple as StartApp
-import StopWords exposing (words)
+import Http
+import Json.Decode as Json
+import Task
+import Effects exposing (Effects, Never)
+import StartApp as StartApp
 import Regex exposing (split)
+import Array
 
-type Action = UpdateText String | GenerateSentences
+import StopWords exposing (words)
 
-type alias Model = 
+
+type Action = UpdateText String
+  | GenerateSentences
+  | PlaySentence Int
+  | RequestGif
+  | ReceiveGif (Maybe String)
+  --| StartSpeakSentence
+  --| EndSpeakSentence
+
+type alias Model =
     {
         inputText : String,
-        sentences : List String
+        sentences : List String,
+        currentIndex: Int,
+        currentGif : String
     }
 
 initialModel : Model
-initialModel = 
+initialModel =
     {
-        inputText = "",
-        sentences = []
+        inputText = "hello.world.this is very cool.yes.yes it is.",
+        sentences = [],
+        currentIndex = 0,
+        currentGif = ""
     }
- 
 
-update action model = 
-    case action of 
-        UpdateText newText -> 
-            { model | inputText = newText }
+update : Action -> Model -> ( Model, Effects.Effects Action )
+update action model =
+    case action of
+        UpdateText newText ->
+            ({ model | inputText = newText }, Effects.none)
         GenerateSentences ->
-            { model | sentences = splitSentences model.inputText}
+            ({ model | sentences = splitSentences model.inputText, currentIndex = 0 }, Effects.none)
+        PlaySentence index ->
+            (model, getRandomGif (Maybe.withDefault "SILENCE" (Array.get index (Array.fromList model.sentences))))
+        RequestGif ->
+            (model, Effects.none)
+        ReceiveGif url ->
+            ({ model | currentGif = (Maybe.withDefault "" url) }, Effects.none)
 
 splitSentences : String -> List String
-splitSentences inputText = 
+splitSentences inputText =
     Regex.split Regex.All (Regex.regex "[.?!]") inputText
 
 -- HTML structure
 header : Html
-header = 
-    div [class "header"] 
+header =
+    div [class "header"]
         [ h1 [class "page-title"] [text "gif theatre"]
         ]
 
 story : String -> Html
-story text = 
+story text =
     p [class "story"] [Html.text text]
 
 submitButton : Signal.Address Action -> Html
-submitButton address = 
+submitButton address =
     input [ class "submit"
-        , type' "submit" 
-        , onClick address GenerateSentences ] [text "submit story"]
+        , type' "button"
+        , value "Submit Story"
+        , onClick address GenerateSentences ] []
+
+playButton : Signal.Address Action -> Html
+playButton address =
+    input [ class "play"
+        , type' "button"
+        , value "Play movie"
+        , onClick address (PlaySentence 0) ] []
+
+view address model =
+    body []
+      [ header
+      , div [imgStyle model.currentGif] []
+      , div [] (List.map story model.sentences)
+      , input [placeholder "placeholder"
+          , type' "text"
+          , value model.inputText
+          , on "input" targetValue (\val -> (Signal.message address (UpdateText val))) ] []
+      , submitButton address
+      , playButton address
+    ]
+
+imgStyle : String -> Attribute
+imgStyle url =
+  style
+    [ "display" => "inline-block"
+    , "margin" => "0 0 0 10vw"
+    , "width" => "600px"
+    , "height" => "400px"
+    , "background-position" => "center center"
+    , "background-size" => "cover"
+    , "background-image" => ("url('" ++ url ++ "')")
+    ]
 
 
-view address model = 
-    body [] 
-    [ header
-        , div [] (List.map story model.sentences)
-        , input [placeholder "placeholder"
-            , type' "text"
-            , on "input" targetValue (\val -> (Signal.message address (UpdateText val))) ] []
-        , submitButton address ]
+init : (Model, Effects.Effects Action)
+init = (initialModel, Effects.none)
+-- app : StartApp.App Model
+-- app =
+--   StartApp.start
+--     { init = init
+--     , inputs = []
+--     , update = update
+--     , view = view
+--     }
+app : StartApp.App Model
+app =
+    StartApp.start
+    { init = init,
+      inputs = [],
+      view = view,
+      update = update
+    }
+
+main : Signal.Signal Html.Html
+main =
+  app.html
+
+port runner : Signal (Task.Task Never ())
+port runner =
+  app.tasks
 
 
-main = 
-    StartApp.start { model = initialModel, 
-        view = view,
-        update = update }
-    --pageStructure
+-- EFFECTS
 
+(=>) = (,)
+
+getRandomGif : String -> Effects Action
+getRandomGif topic =
+  Http.get decodeUrl (randomUrl topic)
+    |> Task.toMaybe
+    |> Task.map ReceiveGif
+    |> Effects.task
+
+
+randomUrl : String -> String
+randomUrl topic =
+  Http.url "http://api.giphy.com/v1/gifs/random"
+    [ "api_key" => "dc6zaTOxFJmzC"
+    , "tag" => topic
+    ]
+
+
+decodeUrl : Json.Decoder String
+decodeUrl =
+  Json.at ["data", "image_url"] Json.string
