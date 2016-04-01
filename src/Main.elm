@@ -3,13 +3,12 @@ import Effects exposing (Never)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing ( on, targetValue, onClick)
-import TextParser exposing (spokenMailbox)
 import StartApp
 import Task
 import Time
 
 import Storyboard
-import MoviePlayer
+import MoviePlayer exposing (spokenMailbox)
 
 
 -- Model
