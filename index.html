@@ -16,8 +16,11 @@
             main.ports.speakSentence.subscribe(function(textToBeSpoken) {
                 const message = new SpeechSynthesisUtterance(textToBeSpoken)
                 message.voice = voice
+                message.onend = () =>  {
+                  main.ports.speakEnd.send(1)
+                }
+                console.log(textToBeSpoken, message);
                 window.speechSynthesis.speak(message)
-                message.onend = () =>  main.ports.speakEnd.send(2)
             });
         </script>
     </body>

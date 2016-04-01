@@ -43,13 +43,21 @@ update action model =
     StoryboardAction childAction ->
       let
         (result, fx) = Storyboard.update childAction model.storyboardModel
+        isPlaying = result.playRequested
+        wasPlaying = model.isPlaying
       in
         ({ model | storyboardModel = result
                  , moviePlayerModel = MoviePlayer.createModel result.sentences
-                 , isPlaying = result.playRequested
+                 , isPlaying = isPlaying
          }
-        , Effects.map StoryboardAction fx
-        )
+        , if isPlaying && not wasPlaying then
+            Effects.batch
+              [ Effects.map StoryboardAction fx,
+                Effects.map MoviePlayerAction MoviePlayer.startMovie
+              ]
+          else
+            Effects.map StoryboardAction fx
+      )
 
     MoviePlayerAction childAction ->
       let

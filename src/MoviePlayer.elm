@@ -6,22 +6,22 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as Json
-import Task
+import Task exposing (Task)
 import Array
-
+import Debug exposing (log)
 -- Model
 
 type alias Model =
   { sentences : List String
   , currentGif : String
-  , nextIndex : Int
+  , currentSentence : String
   }
 
 createModel : List String -> Model
 createModel newSentences =
-  { initialModel | sentences = newSentences
+  { sentences = newSentences
   , currentGif = ""
-  , nextIndex = 0
+  , currentSentence = ""
   }
 
 createPlayInput : Signal.Signal Int -> Signal.Signal Action
@@ -30,7 +30,7 @@ createPlayInput inputSignal =
 
 initialModel : Model
 initialModel =
-  createModel []
+  createModel [""]
 
 -- Action
 
@@ -42,25 +42,26 @@ type Action
 
 -- Updater
 
-findMaybeInList : List a -> Int -> a -> a
-findMaybeInList list index default =
-  Maybe.withDefault default  (Array.get index (Array.fromList list))
-
-
 update : Action -> Model -> ( Model, Effects.Effects Action )
 update action model =
   case action of
-    PlaySentence index ->
-      (model, getGif (findMaybeInList model.sentences index ""))
+    PlaySentence _ ->
+      case model.sentences of
+        [] ->
+          (model, Effects.none)
+        [sentence] ->
+          ({ model | currentSentence = sentence, sentences = [] }
+          , getGif sentence)
+        sentence::rest ->
+          ({ model | currentSentence = sentence , sentences = rest }
+          , getGif sentence)
 
     RequestGif ->
       (model, Effects.none)
 
     ReceiveGif url ->
-      ({ model | currentGif = (Maybe.withDefault "" url),
-                 nextIndex = model.nextIndex + 1
-       }
-       , speak (findMaybeInList model.sentences model.nextIndex "")
+      ({ model | currentGif = (Maybe.withDefault "" url) }
+       , speak model.currentSentence
       )
     NoOp ->
       (model, Effects.none)
@@ -92,7 +93,7 @@ imgStyle url =
     , "height" => "400px"
     , "background-position" => "center center"
     , "background-size" => "cover"
-    , "background-image" => ("url('" ++ url ++ "')")
+    , "background-image" => ("url('" ++  url ++ "')")
     ]
 -- EFFECTS
 
@@ -107,9 +108,9 @@ getGif query =
 
 randomUrl : String -> String
 randomUrl query =
-  Http.url "http://api.giphy.com/v1/gifs/translate"
+  Http.url "http://api.giphy.com/v1/gifs/random"
     [ "api_key" => "dc6zaTOxFJmzC"
-    , "s" => query
+    , "topic" => query
     ]
 
 decodeUrl : Json.Decoder String
@@ -123,7 +124,12 @@ speak sentence =
     |> Effects.task
     |> Effects.map (\_ -> NoOp)
 
-
 spokenMailbox: Signal.Mailbox String
 spokenMailbox =
     Signal.mailbox ""
+
+startMovie : Effects Action
+startMovie =
+  Task.succeed 0
+    |> Effects.task
+    |> Effects.map PlaySentence
