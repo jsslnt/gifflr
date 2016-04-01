@@ -320,5 +320,7 @@ words =
     "yours",
     "yourself",
     "yourselves",
-    "the"
+    "the",
+    " ",
+    "\""
   ]
