@@ -76,10 +76,9 @@ view : Signal.Address Action -> AppModel -> Html
 view address model =
   Html.div
     []
-    [ if model.isPlaying then
+    [
         MoviePlayer.view (Signal.forwardTo address MoviePlayerAction) model.moviePlayerModel
-      else
-        Storyboard.view (Signal.forwardTo address StoryboardAction) model.storyboardModel
+        , Storyboard.view (Signal.forwardTo address StoryboardAction) model.storyboardModel
     ]
 
 --Inbound ports

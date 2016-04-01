@@ -125,6 +125,7 @@ imgStyle url =
     , "background-size" => "cover"
     , "background-image" => ("url('" ++  url ++ "')")
     , "transform" => "rotate(-1.2deg) skew(-2deg)"
+    , "z-index" => "1000"
     ]
 -- EFFECTS
 

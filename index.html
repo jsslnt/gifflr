@@ -34,6 +34,7 @@
             });
 
             main.ports.changeVoice.subscribe(({voice, rate, pitch}) => {
+                console.log(voice, rate, pitch)
                 settings.voice = window.speechSynthesis.getVoices().find((synthVoice) => synthVoice.name === voice)
                 settings.rate = rate
                 settings.pitch = pitch

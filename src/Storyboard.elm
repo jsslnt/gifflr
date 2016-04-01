@@ -43,7 +43,7 @@ update action model =
   case action of
     UpdateText newText ->
         ({ model | inputText = newText }, Effects.none)
-    GenerateSentences -> 
+    GenerateSentences ->
         ({ model | sentences = TextParser.splitTextBlock model.inputText }
         , Effects.none)
     PlayMovie ->
@@ -93,7 +93,7 @@ span word =
     li [] [Html.text word]
 
 view address model =
-  body []
+  div [ boardStyle model.playRequested ]
     [ header
     , input [placeholder "placeholder"
       , type' "text"
@@ -104,3 +104,20 @@ view address model =
     , div [] (List.map story model.sentences)
     , VoiceSettings.view (Signal.forwardTo address VoiceSettingsAction) model.voiceSettingsModel
   ]
+
+(=>) = (,)
+
+boardStyle : Bool -> Attribute
+boardStyle playRequested =
+  style
+    [ "display" => "inline-block"
+    , "position" => "absolute"
+    , "top" => "0"
+    , "width" => "100vw"
+    , "height" => "100vw"
+    , "background-position" => "center center"
+    , "background-size" => "cover"
+    , "background-image" => ("url('http://i.vimeocdn.com/video/156054460_1280x720.jpg')")
+    , "transform" => if playRequested then "translateY(-100vw)" else ""
+    , "transition" => "transform 1.5s ease-in-out"
+    ]
