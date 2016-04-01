@@ -9,9 +9,30 @@ import Task
 import Effects exposing (Effects, Never)
 import StartApp as StartApp
 import Regex exposing (split)
+import Array
 
 import StopWords exposing (words)
 
-splitSentences : String -> List String
-splitSentences inputText =
+splitTextBlock : String -> List String
+splitTextBlock inputText =
     Regex.split Regex.All (Regex.regex "[.?!]") inputText
+
+splitSentence : String -> List String
+splitSentence sentence =
+    Regex.split Regex.All (Regex.regex "[ ]") sentence
+
+filterStopWords : List String -> List String
+filterStopWords wordList =
+    List.filter findInStopWords wordList
+
+
+findInStopWords : String -> Bool
+findInStopWords word =
+    let
+        foundInStopWords = False
+    in
+        List.all (stringsEqual word) StopWords.words
+
+stringsEqual : String -> String -> Bool
+stringsEqual a b =
+    a /= b

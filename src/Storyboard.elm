@@ -38,8 +38,8 @@ update action model =
   case action of
     UpdateText newText ->
         ({ model | inputText = newText }, Effects.none)
-    GenerateSentences ->
-        ({ model | sentences = TextParser.splitSentences model.inputText }
+    GenerateSentences -> 
+        ({ model | sentences = TextParser.splitTextBlock model.inputText }
         , Effects.none)
     PlayMovie ->
         ( {model | playRequested = True }, Effects.none )
@@ -69,7 +69,16 @@ playButton address =
 
 story : String -> Html
 story text =
-    p [class "story"] [Html.text text]
+    --p [class "story"] [Html.text text]
+    let
+        words = TextParser.filterStopWords (TextParser.splitSentence text)
+    in
+        p   [class "story"]
+            [ ul [] (List.map span words) ]
+
+span : String -> Html
+span word =
+    li [] [Html.text word]
 
 view address model =
   body []
