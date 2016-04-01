@@ -13,15 +13,12 @@ import Array
 
 import StopWords exposing (words)
 
-
 type Action = UpdateText String
   | GenerateSentences
   | PlaySentence Int
   | RequestGif
   | ReceiveGif (Maybe String)
   | NoOp
-  --| StartSpeakSentence
-  --| EndSpeakSentence
 
 type alias Model =
     {
