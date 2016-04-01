@@ -10,12 +10,21 @@ import Effects exposing (Effects, Never)
 import StartApp as StartApp
 import Regex exposing (split)
 import Array
+import String
 
 import StopWords exposing (words)
 
 splitTextBlock : String -> List String
 splitTextBlock inputText =
-    Regex.split Regex.All (Regex.regex "[.?!]") inputText
+    eliminateEmpties (Regex.split Regex.All (Regex.regex "[.?!]") inputText)
+
+eliminateEmpties : List String -> List String
+eliminateEmpties text =
+    let
+        checkEmpty word =
+            not (String.isEmpty word)
+    in
+        List.filter checkEmpty text
 
 splitSentence : String -> List String
 splitSentence sentence =
