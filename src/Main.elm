@@ -9,6 +9,7 @@ import Time
 
 import Storyboard
 import MoviePlayer exposing (spokenMailbox)
+import VoiceSettings exposing (voiceMailbox, SettingsModel)
 
 
 -- Model
@@ -94,6 +95,10 @@ port tasks =
 port speakSentence : Signal String
 port speakSentence =
   spokenMailbox.signal
+
+port changeVoice : Signal SettingsModel
+port changeVoice =
+    voiceMailbox.signal
 
 -- Start app
 

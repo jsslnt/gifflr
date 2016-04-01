@@ -10,18 +10,31 @@
         <script>
             'use strict'
             const main = window.Elm.embed(Elm.Main, document.querySelector('#main'), {speakEnd: 0})
-
-            const voice = window.speechSynthesis.getVoices().filter((voices) => voice.name === "Fred")
+            const settings = {
+                voice: window.speechSynthesis.getVoices().find((voice) => voice.name === "Fred"),
+                rate: 1,
+                pitch: 1
+            }
 
             main.ports.speakSentence.subscribe(function(textToBeSpoken) {
                 const message = new SpeechSynthesisUtterance(textToBeSpoken)
-                message.voice = voice
+                message.voice = settings.voice
+                message.rate = parseFloat(settings.rate)
+                message.pitch = parseFloat(settings.pitch)
+
+                console.log(settings, message)
                 message.onend = () =>  {
                   main.ports.speakEnd.send(1)
                 }
                 console.log(textToBeSpoken, message);
                 window.speechSynthesis.speak(message)
             });
+
+            main.ports.changeVoice.subscribe(({voice, rate, pitch}) => {
+                settings.voice = window.speechSynthesis.getVoices().find((synthVoice) => synthVoice.name === voice)
+                settings.rate = rate
+                settings.pitch = pitch
+            })
         </script>
     </body>
 </html>

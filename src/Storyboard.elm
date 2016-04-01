@@ -9,12 +9,15 @@ import Json.Decode as Json
 import Task
 import TextParser
 
+import VoiceSettings
+
 -- Model
 
 type alias Model =
   { inputText : String
   , sentences : List String
   , playRequested : Bool
+  , voiceSettingsModel : VoiceSettings.SettingsModel
   }
 
 initialModel : Model
@@ -22,6 +25,7 @@ initialModel =
   { inputText = ""
   , sentences = []
   , playRequested = False
+  , voiceSettingsModel = VoiceSettings.initialModel
   }
 
 -- Actions
@@ -30,6 +34,7 @@ type Action
   = UpdateText String
   | GenerateSentences
   | PlayMovie
+  | VoiceSettingsAction VoiceSettings.Action
 
 -- Updater
 
@@ -43,6 +48,13 @@ update action model =
         , Effects.none)
     PlayMovie ->
         ( {model | playRequested = True }, Effects.none )
+    VoiceSettingsAction childAction ->
+      let
+        (result, fx) = VoiceSettings.update childAction model.voiceSettingsModel
+      in
+        ({ model | voiceSettingsModel = result }
+        , Effects.map VoiceSettingsAction fx
+        )
 
 -- View
 
@@ -90,4 +102,5 @@ view address model =
     , submitButton address
     , playButton address
     , div [] (List.map story model.sentences)
+    , VoiceSettings.view (Signal.forwardTo address VoiceSettingsAction) model.voiceSettingsModel
   ]
