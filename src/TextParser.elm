@@ -25,6 +25,13 @@ filterStopWords : List String -> List String
 filterStopWords wordList =
     List.filter findInStopWords wordList
 
+joinWithSpaces : String -> String -> String
+joinWithSpaces a b =
+  a ++ " " ++ b
+
+constructSearchTermFromSentence : String -> String
+constructSearchTermFromSentence sentence =
+  List.foldr joinWithSpaces "" (filterStopWords (splitSentence sentence))
 
 findInStopWords : String -> Bool
 findInStopWords word =

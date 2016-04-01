@@ -9,6 +9,7 @@ import Json.Decode as Json
 import Task exposing (Task)
 import Array
 import Debug exposing (log)
+import TextParser exposing (constructSearchTermFromSentence)
 -- Model
 
 type alias Model =
@@ -51,10 +52,10 @@ update action model =
           (model, Effects.none)
         [sentence] ->
           ({ model | currentSentence = sentence, sentences = [] }
-          , getGif sentence)
+          , getGif (constructSearchTermFromSentence sentence))
         sentence::rest ->
           ({ model | currentSentence = sentence , sentences = rest }
-          , getGif sentence)
+          , getGif (constructSearchTermFromSentence sentence))
 
     RequestGif ->
       (model, Effects.none)
@@ -108,14 +109,14 @@ getGif query =
 
 randomUrl : String -> String
 randomUrl query =
-  Http.url "http://api.giphy.com/v1/gifs/random"
+  Http.url "http://api.giphy.com/v1/gifs/translate"
     [ "api_key" => "dc6zaTOxFJmzC"
-    , "topic" => query
+    , "s" => query
     ]
 
 decodeUrl : Json.Decoder String
 decodeUrl =
-  Json.at ["data", "image_url"] Json.string
+  Json.at ["data", "images", "original", "url"] Json.string
 
 
 speak : String -> Effects Action
