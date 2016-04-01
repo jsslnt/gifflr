@@ -31,7 +31,7 @@ createPlayInput inputSignal =
 
 initialModel : Model
 initialModel =
-  createModel [""]
+  createModel []
 
 -- Action
 
@@ -90,14 +90,14 @@ subtitleStyle =
     [ "font-family" => "Helvetica"
     , "position" => "absolute"
     , "font-family" => "Helvetica"
-    , "font-size" => "40px"
-    , "color" => "yellow"
+    , "font-size" => "34px"
+    , "color" => "white"
     , "font-weight" => "bold"
-    , "margin" => "40px"
+    , "margin" => "2vw"
     , "-webkit-text-stroke" => "1px black"
     , "bottom" => "33px"
     , "text-align" => "center"
-    , "width" => "100vw"
+    , "width" => "96vw"
     ]
 
 backgroundStyle : Attribute
@@ -109,15 +109,17 @@ backgroundStyle =
     , "background-size" => "cover"
     , "background-image" => "url(http://i.imgur.com/zMmMATM.jpg?1)"
     ]
+
 imgStyle : String -> Attribute
 imgStyle url =
   style
     [ "display" => "inline-block"
-    , "width" => "551px"
-    , "height" => "310px"
+    , "width" => "409px"
+    , "height" => "231px"
     , "position" => "absolute"
     , "top" => "25%"
-    , "left" => "45%"
+    , "left" => "45.5%"
+    , "border-radius" => "4px"
     , "background-color" => "black"
     , "background-position" => "center center"
     , "background-size" => "cover"
