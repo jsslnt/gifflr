@@ -79,22 +79,50 @@ story text =
     p [class "story"] [Html.text text]
 
 view address model =
-  body []
-    [ header
-    , div [imgStyle model.currentGif] []
-    , div [] (List.map story model.sentences)
-  ]
+  div [backgroundStyle]
+    [ div [imgStyle model.currentGif] []
+    , div [subtitleStyle] [ text model.currentSentence ]
+    ]
 
+subtitleStyle : Attribute
+subtitleStyle =
+  style
+    [ "font-family" => "Helvetica"
+    , "position" => "absolute"
+    , "font-family" => "Helvetica"
+    , "font-size" => "40px"
+    , "color" => "yellow"
+    , "font-weight" => "bold"
+    , "margin" => "40px"
+    , "-webkit-text-stroke" => "1px black"
+    , "bottom" => "33px"
+    , "text-align" => "center"
+    , "width" => "100vw"
+    ]
+
+backgroundStyle : Attribute
+backgroundStyle =
+  style
+    [ "width" => "100vw"
+    , "height" => "100vh"
+    , "background-position" => "center center"
+    , "background-size" => "cover"
+    , "background-image" => "url(http://i.imgur.com/zMmMATM.jpg?1)"
+    ]
 imgStyle : String -> Attribute
 imgStyle url =
   style
     [ "display" => "inline-block"
-    , "margin" => "0 0 0 10vw"
-    , "width" => "600px"
-    , "height" => "400px"
+    , "width" => "551px"
+    , "height" => "310px"
+    , "position" => "absolute"
+    , "top" => "25%"
+    , "left" => "45%"
+    , "background-color" => "black"
     , "background-position" => "center center"
     , "background-size" => "cover"
     , "background-image" => ("url('" ++  url ++ "')")
+    , "transform" => "rotate(-1.2deg) skew(-2deg)"
     ]
 -- EFFECTS
 
