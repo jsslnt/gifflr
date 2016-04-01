@@ -6,7 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as Json
-import Task exposing (Task)
+import Task exposing (Task, andThen, sleep, succeed)
 import Array
 import Debug exposing (log)
 import TextParser exposing (constructSearchTermFromSentence)
@@ -18,11 +18,14 @@ type alias Model =
   , currentSentence : String
   }
 
+initialGif : String
+initialGif = "https://media.giphy.com/media/FUwnn0N8EzDvW/giphy.gif"
+
 createModel : List String -> Model
 createModel newSentences =
   { sentences = newSentences
-  , currentGif = ""
-  , currentSentence = ""
+  , currentGif = "https://media.giphy.com/media/FUwnn0N8EzDvW/giphy.gif"
+  , currentSentence = "ssh.. silence"
   }
 
 createPlayInput : Signal.Signal Int -> Signal.Signal Action
@@ -162,6 +165,6 @@ spokenMailbox =
 
 startMovie : Effects Action
 startMovie =
-  Task.succeed 0
+  Task.sleep 5000 -- wait a litte to show the coundown timer
     |> Effects.task
-    |> Effects.map PlaySentence
+    |> Effects.map (always (PlaySentence 0))
