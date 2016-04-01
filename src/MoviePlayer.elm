@@ -16,6 +16,7 @@ type alias Model =
   { sentences : List String
   , currentGif : String
   , currentSentence : String
+  , isFinished: Bool
   }
 
 initialGif : String
@@ -25,7 +26,8 @@ createModel : List String -> Model
 createModel newSentences =
   { sentences = newSentences
   , currentGif = "https://media.giphy.com/media/FUwnn0N8EzDvW/giphy.gif"
-  , currentSentence = "ssh.. silence"
+  , currentSentence = "ssh... silence"
+  , isFinished = False
   }
 
 createPlayInput : Signal.Signal Int -> Signal.Signal Action
@@ -52,7 +54,12 @@ update action model =
     PlaySentence _ ->
       case model.sentences of
         [] ->
-          (model, Effects.none)
+          ({model | isFinished = True
+                  , currentGif = ""
+                  , currentSentence = ""
+           }
+           , Effects.none
+          )
         [sentence] ->
           ({ model | currentSentence = sentence, sentences = [] }
           , getGif (constructSearchTermFromSentence sentence))
@@ -83,9 +90,24 @@ story text =
 
 view address model =
   div [backgroundStyle]
-    [ div [imgStyle model.currentGif] []
+    [ div [imgStyle model.currentGif] [
+      div [finishedStyle model.isFinished] [ text "Fin." ]
+    ]
     , div [subtitleStyle] [ text model.currentSentence ]
     ]
+
+finishedStyle : Bool -> Attribute
+finishedStyle isFinished =
+  style
+    [ "display" => if isFinished then "block" else "none"
+    , "color" => "white"
+    , "font-family" => "Helvetica"
+    , "font-size" => "56px"
+    , "font-weight" => "bold"
+    , "position" => "absolute"
+    , "width" => "100%"
+    , "top" => "38%"
+    , "text-align" => "center"]
 
 subtitleStyle : Attribute
 subtitleStyle =
