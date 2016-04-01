@@ -119,5 +119,6 @@ boardStyle playRequested =
     , "background-size" => "cover"
     , "background-image" => ("url('http://i.vimeocdn.com/video/156054460_1280x720.jpg')")
     , "transform" => if playRequested then "translateY(-100vw)" else ""
-    , "transition" => "transform 1.5s ease-in-out"
+    , "transition" => "transform 1.5s cubic-bezier(0.64, 0.66, 0.85,-0.75)"
+    , "z-index" => "1000"
     ]
