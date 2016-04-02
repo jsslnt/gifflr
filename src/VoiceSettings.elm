@@ -58,22 +58,32 @@ voiceOption voice =
 voiceSelect : Signal.Address Action -> List String -> Html
 voiceSelect address voices =
     div [] [
-        label [] [Html.text "Voice to use"]
+        p [] [Html.text "As narrated by"]
       , select [on "input" targetValue (\val -> (Signal.message address (SetVoice val)))] (List.map voiceOption voices)
     ]
 
 rateSelect : Signal.Address Action -> String -> Html
 rateSelect address rate =
     div [] [
-        label [] [Html.text "Rate of speech"]
-      , input [on "input" targetValue (\val -> (Signal.message address (SetRate val)))] []
+        p [] [Html.text "Rate of speech"]
+      , input [
+          type' "range"
+        , rangeStyle
+        , Html.Attributes.min "0.1"
+        , Html.Attributes.max "11"
+        , on "input" targetValue (\val -> (Signal.message address (SetRate val)))] []
     ]
 
 pitchSelect : Signal.Address Action -> String -> Html
 pitchSelect address voices =
     div [] [
-        label [] [Html.text "Pitch"]
-      , input [on "input" targetValue (\val -> (Signal.message address (SetPitch val))) ] []
+        p [] [Html.text "Pitch"]
+      , input [
+          type' "range"
+        , rangeStyle
+        , Html.Attributes.min "0.1"
+        , Html.Attributes.max "11"
+        , on "input" targetValue (\val -> (Signal.message address (SetPitch val))) ] []
     ]
 
 view address model =
@@ -123,3 +133,12 @@ hardcodedVoices = [ "Alex"
           , "Zarvox"
           , "Google US English"
           ]
+
+
+(=>) = (,)
+
+rangeStyle: Attribute
+rangeStyle =
+  style [ "width" => "60%"
+
+  ]
