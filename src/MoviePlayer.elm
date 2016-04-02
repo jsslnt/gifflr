@@ -103,11 +103,12 @@ subtitleStyle =
 backgroundStyle : Attribute
 backgroundStyle =
   style
-    [ "width" => "100vw"
-    , "height" => "100vh"
-    , "background-position" => "center center"
+    [ "width" => "1280px"
+    , "height" => "720"
+    , "background-position" => "left top"
     , "background-size" => "cover"
-    , "background-image" => "url(http://i.imgur.com/zMmMATM.jpg?1)"
+    , "background-image" => "url(http://i.imgur.com/TjwjahB.jpg)"
+    , "perspective" => "250px"
     ]
 
 imgStyle : String -> Attribute
@@ -115,17 +116,17 @@ imgStyle url =
   style
     [ "display" => "inline-block"
     , "width" => "409px"
-    , "height" => "231px"
+    , "height" => "208px"
     , "position" => "absolute"
-    , "top" => "25%"
-    , "left" => "45.5%"
+    , "top" => "35%"
+    , "left" => "26.5%"
     , "border-radius" => "4px"
     , "background-color" => "black"
-    , "background-position" => "center center"
     , "background-size" => "cover"
     , "background-image" => ("url('" ++  url ++ "')")
-    , "transform" => "rotate(-1.2deg) skew(-2deg)"
+    , "transform" => "rotateY(11deg) rotateX(2deg) skew(2deg) rotate(1deg)"
     , "z-index" => "1000"
+    , "box-shadow" => "rgba(103, 134, 191, 0.8) 0px 0px 30px 0"
     ]
 -- EFFECTS
 
