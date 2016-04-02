@@ -14,6 +14,24 @@ import String
 
 import StopWords exposing (words)
 
+
+splitSentence : String -> List String
+splitSentence sentence =
+    Regex.split Regex.All (Regex.regex "[ ]") sentence
+
+
+constructSearchTermFromSentence : String -> String
+constructSearchTermFromSentence sentence =
+    let
+        joinWithSpaces a b =
+            a ++ " " ++ b
+    in
+        splitSentence sentence
+        |> filterStopWords
+        |> eliminateEmpties
+        |> List.foldr joinWithSpaces ""
+
+
 splitTextBlock : String -> List String
 splitTextBlock inputText =
     eliminateEmpties (Regex.split Regex.All (Regex.regex "[.?!]") inputText)
@@ -26,29 +44,16 @@ eliminateEmpties text =
     in
         List.filter checkEmpty text
 
-splitSentence : String -> List String
-splitSentence sentence =
-    Regex.split Regex.All (Regex.regex "[ ]") sentence
 
 filterStopWords : List String -> List String
 filterStopWords wordList =
     List.filter findInStopWords wordList
 
-joinWithSpaces : String -> String -> String
-joinWithSpaces a b =
-  a ++ " " ++ b
-
-constructSearchTermFromSentence : String -> String
-constructSearchTermFromSentence sentence =
-  List.foldr joinWithSpaces "" (filterStopWords (splitSentence sentence))
 
 findInStopWords : String -> Bool
 findInStopWords word =
     let
-        foundInStopWords = False
+        stringsEqual a b =
+            a /= b
     in
         List.all (stringsEqual word) StopWords.words
-
-stringsEqual : String -> String -> Bool
-stringsEqual a b =
-    a /= b
