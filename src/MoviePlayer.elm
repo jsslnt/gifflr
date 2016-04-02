@@ -100,14 +100,16 @@ finishedStyle : Bool -> Attribute
 finishedStyle isFinished =
   style
     [ "display" => if isFinished then "block" else "none"
-    , "color" => "white"
-    , "font-family" => "Helvetica"
+    , "color" => "rgba(255, 255, 255, 0.7)"
+    , "font-family" => "Baskerville"
     , "font-size" => "56px"
     , "font-weight" => "bold"
     , "position" => "absolute"
     , "width" => "100%"
     , "top" => "38%"
-    , "text-align" => "center"]
+    , "transform" => "rotateY(46deg)"
+    , "text-align" => "center"
+    , "font-style" => "italic"]
 
 subtitleStyle : Attribute
 subtitleStyle =
