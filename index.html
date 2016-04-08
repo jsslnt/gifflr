@@ -3,7 +3,7 @@
         <title>GIFFLR PLS</title>
         <script src="elm.js"></script>
         <style>
-          body { margin: 0; padding: 0; font-family: helvetica; }
+          body { margin: 0; padding: 0; font-family: helvetica; background-color: black; }
         </style>
     </head>
     <body>
@@ -25,12 +25,11 @@
                 message.rate = parseFloat(settings.rate)
                 message.pitch = parseFloat(settings.pitch)
 
-                console.log(settings, message)
                 message.onend = () =>  {
                   main.ports.speakEnd.send(1)
                 }
                 console.log(textToBeSpoken, message);
-                window.speechSynthesis.speak(message)
+                window.setTimeout(() => window.speechSynthesis.speak(message),500)
             });
 
             main.ports.changeVoice.subscribe(({voice, rate, pitch}) => {
